@@ -1,0 +1,18 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME:  lx_Counnt
+//
+// CREATE DATE : 2014.08.25 PM 16:02
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: 计数，返回用户当前选择了多少个物体。
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+global proc lx_Counnt()
+{
+    string $lx_Obj[]=`ls -sl`;
+	//select -cl;
+	int $lx_num=`size $Obj`;
+	print ("当前选择了 "+$lx_num+"  个物体");
+}

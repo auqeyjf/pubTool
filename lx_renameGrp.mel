@@ -1,0 +1,18 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_renameGrp()
+//
+// CREATE DATE : 2014.08.15 PM 15：45
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: 重命名已经存在的组，先选择物体，再选组，执行命令。
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+global proc lx_renameGrp()
+{
+    string $objes[] =`ls -sl`;
+	string $newName = "grp_" + $objes[0];
+	rename $objes[1] $newName;
+}

@@ -1,0 +1,521 @@
+//AUTHOR: JiangJiShi
+//UPDATE: 2013.2.1 8:40PM
+//FIX :
+// Beta1.0 重新命名不超过两位数的物体 2013.1.1 PM
+// Beta2.0 命名字母编号不超过四位  2013.2.1 PM
+// Beta3.0 加上数字编号
+// Beta4.0 更改UI,加上查找\替换\前缀\后缀
+// Beta4.1 增加自动命名shape节点功能 2014.11.19 PM
+//New AUTHOR: ZhuMingGuo
+//New UPDATE: 2013.12.11 11:11AM
+//SCRIPT NAME: LJ_RenameTool_vBeta3
+//
+
+//Main UI
+global proc LJ_RenameTool_vBeta4()
+{
+
+if (`window -exists  Lj_ModelToolUI`)
+{
+    deleteUI Lj_ModelToolUI;
+}
+window -title "模型组命名工具 vBeta 4.1" -wh 200 300 -s 0 -mnb 0 -mxb 0 Lj_ModelToolUI;
+columnLayout -adj 1;
+rowLayout  -nc 2 -cw 3 250;
+text -l "点楼下按钮可以去掉当前选择物体的NameSpace:" -h 10 -en 0;
+setParent..;
+//textScrollList -h 1 -en 0;
+button -bgc .3 .4 .6 -h 40 -l "   Remove   NameSpace    " -c "Lj_RemoveNameSpace" ;
+setParent..;
+columnLayout CLA;
+text -l "";
+rowLayout  -nc 6 -columnWidth6 60 60 70 60 55 60 ;
+text -w 50 -l " 物体位置：";
+text -w 60  -l "物体类型：";
+text -w 60  -l "物体名称：";
+text -w 60 -l "         ";
+text -w 60  -l "字母编号：";
+text -w 60  -l "数字编号:";
+setParent..;
+text -l "" -h 5;
+rowLayout -ad1  10 -nc 6 -columnWidth6 60 60 70 65 55 60 ;
+optionMenuGrp  Lj_side;
+menuItem -l "R";
+menuItem -l "M";
+menuItem -l "L";
+optionMenuGrp Lj_type;
+menuItem -l "TM";
+menuItem -l "OB";
+menuItem -l "JT";
+//menuItem -l "HL";
+menuItem -l "DS";
+menuItem -l "IK";
+menuItem -l "Cuv";
+optionMenuGrp -cc Lj_otherCommand Lj_Name01;
+menuItem -l "Head";
+menuItem -l "Hair";
+menuItem -l "Hand";
+menuItem -l "Body";
+menuItem -l "Other...";
+textField -w 60 -en 0 Lj_Name02;
+optionMenuGrp Lj_num01;
+menuItem -l "A";
+menuItem -l "B";
+menuItem -l "C";
+menuItem -l "D";
+menuItem -l "E";
+menuItem -l "F";
+menuItem -l "G";
+menuItem -l "H";
+menuItem -l "I";
+menuItem -l "J";
+menuItem -l "K";
+menuItem -l "L";
+menuItem -l "M";
+menuItem -l "N";
+menuItem -l "O";
+menuItem -l "P";
+menuItem -l "Q";
+menuItem -l "R";
+menuItem -l "S";
+menuItem -l "T";
+menuItem -l "U";
+menuItem -l "V";
+menuItem -l "W";
+menuItem -l "X";
+menuItem -l "Y";
+menuItem -l "Z";
+optionMenuGrp Lj_num02;
+menuItem -l "A";
+menuItem -l "B";
+menuItem -l "C";
+menuItem -l "D";
+menuItem -l "E";
+menuItem -l "F";
+menuItem -l "G";
+menuItem -l "H";
+menuItem -l "I";
+menuItem -l "J";
+menuItem -l "K";
+menuItem -l "L";
+menuItem -l "M";
+menuItem -l "N";
+menuItem -l "O";
+menuItem -l "P";
+menuItem -l "Q";
+menuItem -l "R";
+menuItem -l "S";
+menuItem -l "T";
+menuItem -l "U";
+menuItem -l "V";
+menuItem -l "W";
+menuItem -l "X";
+menuItem -l "Y";
+menuItem -l "Z";
+setParent..;
+text -l " ===============================================" -en 0;
+checkBox -l "  N多物体 -->> 勾选为选择物体名称后编号为四位数  例：MOBHeadAAAA" Lj_checkBOX01;
+text -l " Note:      R= Right   M= Middle    L= Left" -en 0 -h 25;
+text -l " TM--->Transform   OB--->PolygonMesh   JT--->Joint" -en 0;
+text -l " Cuv--->Curve         DS--->Deformers        IK--->Ik handle" -en 0;
+text -l "" -h 5;
+setParent..;
+rowLayout -nc 2;
+button -l " 重   命   名 " -w 185 -c Lj_ModelRenameProc B1;
+button -l " 重        置 " -w 185 -c Lj_rebuildUI B2;
+setParent..;
+//text -l "" -h 5;
+text -l " ===============================================" -en 0;
+separator -h 10 -style "none";
+//prefix
+    rowColumnLayout -numberOfColumns 3 -columnAttach  1 "both" 10 -columnWidth 1 60 -columnWidth 2 230 -columnWidth 3 80;
+
+    text -l "Prefix:" -al "left";
+    textField -en 1 prefix_tf;
+    button -l "Add" -c "prefix_Command";
+    setParent..;
+
+    separator -h 5 -style "none";
+
+//suffix
+    rowColumnLayout -numberOfColumns 3 -columnAttach  1 "both" 10 -columnWidth 1 60 -columnWidth 2 230 -columnWidth 3 80;
+
+    text -l "Suffix:" -al "left";
+    textField -en 1 suffix_tf;
+    button -l "Add" -c "suffix_Command";
+    setParent..;
+
+  separator -h 15 -style "none";
+
+  rowColumnLayout -numberOfColumns 3 -columnAttach  1 "both" 10 -columnWidth 1 60 -columnWidth 2 230 -columnWidth 3 80;
+
+    text -l "Search:" -al "left";
+    textField -en 1 search_tf;
+    text -l "";
+    setParent..;
+
+    separator -h 5 -style "none";
+
+//replace
+    rowColumnLayout -numberOfColumns 3 -columnAttach  1 "both" 10 -columnWidth 1 60 -columnWidth 2 230 -columnWidth 3 80;
+
+    text -l "Replace:" -al "left";
+    textField -en 1 replace_tf;
+    button -l "Replace" -c "search_replace_Command";
+    setParent..;
+
+    separator -h 15 -style "none";
+
+//rename
+    rowColumnLayout -numberOfColumns 3 -columnAttach  1 "both" 10 -columnWidth 1 60 -columnWidth 2 230 -columnWidth 3 80;
+
+    text -l "Rename:" -al "left";
+    textField -en 1 substitute_tf;
+    button -l "Rename" -c "substituteCommand";
+    setParent..;
+
+    separator -h 5 -style "none";
+
+
+//
+text -l " ===============================================" -en 0;
+//
+  rowColumnLayout -numberOfColumns 2 -columnAttach  1 "both" 10 -columnWidth 3 280 -columnWidth 2 10 ;
+
+    //text -l "";
+    text -l ">>>   请从列表中选择多余的Shape删除   <<< " ;
+    setParent..;
+
+  columnLayout -adj 1 -w 380 -h 220;
+
+  paneLayout -w 370 -h 160;
+
+  textScrollList  -ams 1 -bgc .5 .5 0  reTSLs;
+
+  setParent..;
+
+  //separator -h 10 -style "none";
+
+  //separator -h 10 -style "none";
+
+  button -bgc .3 .4 .6 -h 45 -l "Delete Current Select Shapes" -c "Lj_DeleteShapes";
+	text -l "Author:  JiangJiShi                  Q Q: 287236623  ";
+  //separator -h 10 -style "none";
+
+showWindow Lj_ModelToolUI;
+
+}
+
+////////////////////////////////////////////////////////////
+global proc substituteCommand()
+{
+    string $substitute=`textField -q -tx substitute_tf`;
+    string $sels[]=`ls -sl`;
+    for ($i in $sels)
+    {
+        rename $i $substitute;
+    }
+    select -cl ;
+}
+
+//===search_replace_Command===//
+global proc search_replace_Command()
+{
+    string $sels[]=`ls -selection`;
+    int $selscount=size($sels);
+    for ($i=0;$i<$selscount;$i++)
+    {
+        string $renameobjs[]=`ls -selection`;
+        select -d $renameobjs[0];
+
+        string $mysoucename=`textField -q -tx search_tf`;
+        string $mytargetname=`textField -q -tx replace_tf`;
+        string $newname;
+
+        string $ymatch=`match "|" $renameobjs[0]`;
+        if ($ymatch=="|")
+        {
+            string $buffer[];
+            tokenize $renameobjs[0] "|" $buffer;
+            int $bucount=size($buffer)-1;
+            $newname=$buffer[$bucount];
+        }
+        else
+        {
+            $newname=$renameobjs[0];
+        }
+
+        string $ymatch=`match $mysoucename $newname`;
+        if ($ymatch==$mysoucename)
+        {
+            $newname=`substitute $mysoucename $newname $mytargetname`;
+            rename $renameobjs[0] $newname;
+        }
+    }
+ }
+
+global proc prefix_Command()
+{
+    string $sels[]=`ls -selection`;
+    int $selscount=size($sels);
+    for ($i=0;$i<$selscount;$i++)
+    {
+        string $renameobjs[]=`ls -selection`;
+        select -d $renameobjs[0];
+
+        string $mysou=`textField -q -tx  prefix_tf`;
+        //string $mytar=`textField -q -tx  suffix_tf`;
+        string $newname;
+
+        string $ymatch=`match "|" $renameobjs[0]`;
+        if ($ymatch=="|")
+        {
+            string $buffer[];
+            tokenize $renameobjs[0] "|" $buffer;
+            int $bucount=size($buffer)-1;
+            $newname=$buffer[$bucount];
+        }
+        else
+        {
+            $newname=$renameobjs[0];
+        }
+        $newname=$mysou+$newname;
+        rename $renameobjs[0] $newname;
+    }
+}
+
+//===suffix_Command===//
+global proc suffix_Command()
+{
+    string $sels[]=`ls -selection`;
+    int $selscount=size($sels);
+    for ($i=0;$i<$selscount;$i++)
+    {
+        string $renameobjs[]=`ls -selection`;
+        select -d $renameobjs[0];
+
+        //string $mysou=`textField -q -tx  prefix_tf`;
+        string $mytar=`textField -q -tx  suffix_tf`;
+        string $newname;
+
+        string $ymatch=`match "|" $renameobjs[0]`;
+        if ($ymatch=="|")
+        {
+            string $buffer[];
+            tokenize $renameobjs[0] "|" $buffer;
+            int $bucount=size($buffer)-1;
+            $newname=$buffer[$bucount];
+        }
+        else
+        {
+            $newname=$renameobjs[0];
+        }
+        $newname=$newname+$mytar;
+        rename $renameobjs[0] $newname;
+    }
+}
+
+
+global proc Lj_ModelRenameProc()
+{
+    string $Lj_side = `optionMenuGrp -q -v Lj_side`;
+    string $Lj_type = `optionMenuGrp -q -v Lj_type`;
+    string $Lj_Name01;
+    string $Lj_Name02;
+    if (`textField -q -en Lj_Name02`)
+    {
+    $Lj_Name01="";
+    $Lj_Name02= `textField  -q -fi Lj_Name02`;
+    }else{
+    $Lj_Name01=`optionMenuGrp -q -v Lj_Name01`;
+    $Lj_Name02= "";
+    }
+    string $Lj_selObj[]=`ls -sl`;
+    int $i=1;
+    int $a=1;
+    int $b=1;
+    int $c=1;
+    int $d=1;
+    string $Lj_num03="";
+    string $Lj_num04="";
+    string $j_ManyShape[];
+    string $j_newShapes[];
+    for($i;$i<(`size $Lj_selObj`+1);$i++)
+    {
+        int $checkBox=`checkBox -q -v Lj_checkBOX01`;
+        if($checkBox==0)
+        {
+          //select -r $Lj_selObj[$i-1];
+       	  string $Lj_num01 =`optionMenuGrp -q -v Lj_num01`;
+          string $Lj_num02 =`optionMenuGrp -q -v Lj_num02`;
+          int $temp02= `optionMenuGrp -q -sl Lj_num02`;
+          if ($temp02!=26)
+          {
+            optionMenuGrp -e -sl ($temp02+1) Lj_num02;
+          }else{
+                optionMenuGrp -e -sl 1 Lj_num02;
+          }
+
+          string $Lj_NewName= $Lj_side+$Lj_type+$Lj_Name01+$Lj_Name02+$Lj_num01+$Lj_num02;
+          rename $Lj_selObj[$i-1] $Lj_NewName;
+		  //string $j_newShapes[];       // hey hey i am here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		  $j_newShapes=`listRelatives -f -shapes $Lj_NewName`;
+		   if($Lj_type=="OB"||$Lj_type=="Cuv")
+		   {
+		     rename $j_newShapes[0] ($Lj_NewName+"Shape01");
+		     if((`size $j_newShapes`)>1)
+		      {
+		          for($ii=0;$ii<(`size $j_newShapes`);$ii++)
+		          {
+		              $j_ManyShape[`size $j_ManyShape`] = $j_newShapes[$ii];
+		          }
+		      }
+		      clear $j_newShapes;
+		   }
+
+
+		  int $Lj_yushu = $i%26;
+          if($Lj_yushu==0)
+          {
+          int $Lj_temp=`optionMenuGrp -q -sl Lj_num01`;
+          optionMenuGrp -e -sl ($Lj_temp+1) Lj_num01;
+          }
+        }
+
+
+        if ($checkBox==1)
+      			 {
+       			 //select -r $Lj_selObj[$i-1];
+                 //为多位数编号准备变量
+        		string $PaiXUa[25] ={"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+       			 $Lj_num03=$PaiXUa[$c-1];
+       			 $Lj_num04=$PaiXUa[$d-1];
+
+        		$d++;
+        		//获取控件的值,并赋与相关变量,组成新的名称;
+        		string $Lj_num01 =`optionMenuGrp -q -v Lj_num01`;
+       		    string $Lj_num02 =`optionMenuGrp -q -v Lj_num02`;
+        		int $temp02= `optionMenuGrp -q -sl Lj_num02`;
+
+        		string $Lj_NewName= $Lj_side+$Lj_type+$Lj_Name01+$Lj_Name02+$Lj_num01+$Lj_num02+$Lj_num03+$Lj_num04;
+        		rename $Lj_selObj[$i-1] $Lj_NewName;
+				//string $j_newShapes[];       // hey hey i am here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				$j_newShape=`listRelatives -f -shapes $Lj_NewName`;
+				rename $j_newShape[0] ($Lj_NewName+"Shape01");
+				if((`size $j_newShapes`)>1)
+		          {
+    		      for($i=0;$i<(`size $j_newShapes`);$i++)
+		          {
+		              $j_ManyShape[`size $j_ManyShape`] = $j_newShapes[$i];
+		          }
+    		  }
+				clear $j_newShape;
+
+
+    			 //控制字母不能超过Z;
+       	 		//int $Lj_yushu_D = $i%26;
+      			  if($d ==27) //如果num04="Z"了,那么,num03="B",num04恢复到"A"____AABA
+     	 			  {
+     	  			 	$d=1;
+     	  			     $c++;
+     	    		   if($c==27) //如果num03="z"了,那么,num02应该向上一级,升级为"B",num03恢复到"A";_____ABAA
+     		 		  	{
+        	 		   	$c=1;
+        	    		$b++;
+        	  	 		// print $b;
+         	  			 //int $Lj_yushu_B=$b%27;
+            			if($b==27) //如果num02 ="z"了,那么,num01应该向上升一级,升级为"B",num02恢复到"A" ____BAAA;
+            			{
+                		$b=1;
+                		$a++;
+                		optionMenuGrp -e -sl $a Lj_num01;
+
+            			}
+            			optionMenuGrp -e -sl $b Lj_num02;
+
+        			    }
+
+      		      }
+         	}
+    }
+
+    int $jj_num =`size $j_ManyShape`;
+    for($l=0;$l<$jj_num;$l++)
+    {
+        textScrollList -e -append $j_ManyShape[$l]  reTSLs;
+    }
+}
+
+
+
+global proc Lj_otherCommand()
+{
+    if (`optionMenuGrp -q -v Lj_Name01`=="Other...")
+    {
+        textField -e -en 1 Lj_Name02;
+    }else{
+        textField -e -en 0 Lj_Name02;
+    }
+}
+
+global proc Lj_rebuildUI()
+{
+   optionMenuGrp -e -sl 1 Lj_side;
+   optionMenuGrp -e -sl 1 Lj_type;
+   optionMenuGrp -e -sl 1 Lj_Name01;
+   textField -e -fi "" -en 0 Lj_Name02;
+   optionMenuGrp -e -sl 1 Lj_num01;
+   optionMenuGrp -e -sl 1 Lj_num02;
+   checkBox -e -v 0 Lj_checkBOX01;
+   textField -e -text "" prefix_tf;
+   textField -e -text "" suffix_tf;
+   textField -e -text "" search_tf;
+   textField -e -text "" replace_tf;
+   textField -e -text "" substitute_tf;
+   textScrollList -e -removeAll  reTSLs;
+}
+
+global proc Lj_DeleteShapes()
+{
+    string $j_shapes[];
+    $j_shapes =`textScrollList -q -si reTSLs`;
+    for($i=0;$i<(`size $j_shapes`);$i++)
+    {
+        delete $j_shapes[$i];
+        textScrollList -e -removeItem $j_shapes[$i] reTSLs;
+    }
+
+}
+
+global proc Lj_RemoveNameSpace()
+{
+    string $j_currentObj[]=`ls -sl`;
+    string $j_buffer[];
+    string $j_namespace;
+    for($j1=0;$j1<(`size $j_currentObj`);$j1++)
+    {
+        $j_namespace =`namespaceInfo -cur `;
+        if($j_namespace==":")
+        {
+            error "当前物体不带有NameSpace,无需执行本命令，请选择带有NameSpace物体执行命令";
+        }
+        tokenize $j_currentObj[$j1] $j_namespace $j_buffer;
+        namespace -set $j_buffer[$j1];
+        namespace -set ":";
+        namespace -force -mv $j_buffer[$j1] ":";
+    }
+}
+
+//LJ_RenameTool_vBeta4;
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_transferUV
+//
+// CREATE DATE : 2014.08.25 PM 17£º08
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: ´«µÝUV£¬É¾³ýÀúÊ·¡£
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+global proc lx_transferUV()
+{
+    string $cubes[]=`ls -sl`;
+     for($i=1; $i<size($cubes);$i++)
+     {
+         polyTransfer -v 0 -vc 0 -uv 1
+         -ao $cubes[0] $cubes[$i];
+         doBakeNonDefHistory( 1, {"prePost" });
+     }
+}
+
+

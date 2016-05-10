@@ -1,0 +1,4 @@
+global string $gShelfTopLevel;
+string $currentShelf = `tabLayout -q -selectTab $gShelfTopLevel`;
+setParent $currentShelf;
+shelfButton -command "print \"hello shelf!\"" -image "ask_body_HI.png" -label "MyShelf" -sourceType "mel";

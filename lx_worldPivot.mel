@@ -1,0 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_worldPivot()
+//
+// CREATE DATE : 2014.08.16
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: 将物体坐标还原为世界坐标
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+global proc lx_worldPivot()
+{
+	string $lx_A[]=`ls -sl `;
+	string $lx_B;
+	for (lx_$B in lx_$A)
+	{
+    	string $lx_SC= $lx_B+".scalePivot";
+    	string $lx_RP = $lx_B+".rotatePivot";
+    	move 0 0 0 $lx_SC $lx_RP ;
+	}
+}

@@ -1,0 +1,19 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_snappObj
+//
+// CREATE DATE : 2014.08.25 PM 15：52
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION:  先选源物体，再选择目标物体，将目标物体位置移动到源物体位置上。
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+global proc lx_snappObj()
+{
+    string $lx_objs[]= `ls -sl`;
+	string $lx_constraints[]=`parentConstraint -weight 1`;
+	select $lx_constraints[0];
+	delete;
+	clear $lx_constraints;
+	select -r $lx_objs[1];
+}

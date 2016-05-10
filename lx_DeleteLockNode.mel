@@ -1,0 +1,9 @@
+global proc lx_DeleteLockNode()
+{
+    string $j_obj[]=`ls -sl`;
+	for ($i=0;$i<(`size $j_obj`);$i++)
+	{
+	    lockNode -lock 0 $j_obj[$i];
+	}
+	delete $j_obj;
+}

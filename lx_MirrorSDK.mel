@@ -1,0 +1,57 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME:  lx_MirrorSDK
+//
+// CREATE DATE : 2014.8.18 PM 14:57
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: 镜像驱动关键帧
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+global proc lx_MirrorSDK()
+{
+	string $j_allAttr[] = `listAttr -k`;
+	string $j_selObj[] = `ls -sl`;
+	string $j_sourceNode[];
+	// 先获取选择的控制器，列出控制器的属性，判断属性是否被驱动，是驱动的进一步选择到驱动节点，然后复制节点，重新命名，调整参数，并联系到对称的控制器上。
+	for ($j_temp in $j_allAttr)
+	{
+   		$j_sourceNode = `connectionInfo -dfs ($j_selObj[0] + "." + $j_temp)`;
+  		 for($jj_temp in $j_sourceNode)
+  		 {
+  	  	   // bn_l_IndexB01_rotateZ.input
+
+	    	   string $j_SDKnodes[];
+	    	   tokenize  $jj_temp "." $j_SDKnodes;
+	    	   string $j_nodeType[],$j_sdkedObj[];  //
+	    	   $j_nodeType = `ls -showType $j_SDKnodes[0]`;
+               // animCurveUU 驱动scale属性和自定义属性    animCurveUA 驱动位移属性   animCurveUL   驱动旋转属性
+	    	   if($j_nodeType[1]== "animCurveUA"||$j_nodeType[1]== "animCurveUL"||$j_nodeType[1]== "animCurveUU")
+	    	   {
+	    	       print "\n\r";
+	    	       print $j_nodeType[0];
+	       		    string $j_mirrorNodename,$j_mirrorContrl;
+	        	   $j_mirrorNodename = `substitute "_l_" $j_SDKnodes[0] "_r_"`;
+	        	   $j_mirrorContrl =`substitute "_L" $j_selObj[0] "_R"`;
+
+	        	   duplicate  -name $j_mirrorNodename $j_SDKnodes[0];
+	        	   // $j_SDKnodes  bn_l_IndexA01_rotateZ
+	        	   tokenize $j_SDKnodes[0] "_" $j_sdkedObj;
+	        	   string $j_sdkJoint;
+	        	   int $j_nn=`size $j_sdkedObj`;
+	        	   $j_sdkJoint = `substitute ("_"+$j_sdkedObj[$j_nn-1]) $j_mirrorNodename ""`;
+
+	        	   //duplicate  -name $j_mirrorNodename $j_SDKnodes[0];
+	        	   connectAttr ($j_mirrorContrl+"." + $j_temp) ($j_mirrorNodename + "." + $j_SDKnodes[1]);
+	        	   connectAttr ($j_mirrorNodename + ".output") ($j_sdkJoint + "."+ $j_sdkedObj[`size $j_sdkedObj` -1]);
+	       		}
+
+	     }
+
+	}
+	 clear  $j_allAttr;
+	 clear   $j_selObj;
+
+}

@@ -1,0 +1,12 @@
+string $objes[] =`ls -sl`;
+string $child[],$hehe[];
+for( $i=0; $i<(`size $objes`);$i++)
+{
+    select ($objes[$i]+".f[1113:1129]") ($objes[$i]+".f[2870:2886]") ($objes[$i]+".f[4144:4160]") ($objes[$i]+".f[5901:5917]") ;
+    doDelete;
+    $child = `listRelatives -c $objes[$i]`;
+    $hehe = `polySeparate -ch 1 $child[0]`;
+    delete $hehe[1];
+    select -r $hehe[0];
+    DeleteHistory;
+}

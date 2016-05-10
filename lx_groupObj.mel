@@ -1,0 +1,27 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_groupObj
+//
+// CREATE DATE : 20140815.PM 15:31
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: group for current select obj, the new group name is : grp_ + 'object name';
+//
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+global proc lx_groupObj()
+{
+    //骨骼打组,并清0,命名.
+	string $lx_currentObj[]=`ls -sl`;
+	string $lx_Parenta[]=`pickWalk -d up`;
+	select -clear;
+	string $lx_tempgrp =`group -em -n ("grp_"+$lx_currentObj[0])`;
+	select -r $lx_currentObj[0] $lx_tempgrp;
+	string $lx_Pcostrianta[] =`parentConstraint`;
+	delete $lx_Pcostrianta[0];
+	parent $lx_currentObj[0] $lx_tempgrp;
+	setAttr ($lx_currentObj[0]+".translate") 0 0 0;
+	parent $lx_tempgrp $lx_Parenta[0];
+}
+

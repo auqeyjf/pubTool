@@ -1,0 +1,38 @@
+global proc Jmi_Duplicate()
+{
+string $jm_sel[] = `ls -sl`;
+if((`size $jm_sel`)==0)
+{
+    error "贱米提示您：请选择一个物体再执行脚本！！！";
+}
+int $jm_ro = 45;
+int $jm_mox = 3;
+int $jm_moy = 0;
+string $jm_dup[];
+
+while($jm_ro <= 315)
+{
+    $jm_dup = `duplicate $jm_sel[0]`;
+    select -r $jm_dup[0];
+    if($jm_ro == 225)
+    {
+        $jm_mox = 0;
+        $jm_moy = -3;
+    }
+    move -r -os -wd $jm_mox $jm_moy 0;
+    rotate -r -os 0 (-$jm_ro) 0;
+    $jm_ro = $jm_ro + 45;
+    $jm_mox = $jm_mox +3;
+    clear $jm_dup;
+
+}
+select -cl;
+duplicate -name "TopRotate" $jm_sel[0];
+move -r -os 9 -3 0 "TopRotate";
+rotate -r -os 90 0 0 "TopRotate";
+select -cl;
+duplicate -name "BottomRotate" $jm_sel[0];
+move -r -os 12 -3 0 "BottomRotate";
+rotate -r -os (-90) 0 0 "BottomRotate";
+}
+Jmi_Duplicate();

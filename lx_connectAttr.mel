@@ -1,0 +1,27 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_connectAttr(string $lx_attr)
+//
+// CREATE DATE : 2014.08.15  PM 20:35
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION: connect the specific attributes
+//				$lx_attr value list:  translate   rotate  scale
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+// 连接物体属性
+
+global proc lx_connectAttr(string $lx_attr)
+{
+    //string $Attribute= $lx_attr;
+	string $lx_selObj[] =`ls -sl`;
+    if(`size $lx_selObj`<2)
+    {
+        error "Please select at least two object!!!!";
+    }
+
+	for ($i=1;$i<(`size $lx_selObj`);$i++)
+	{
+	   connectAttr -f ($lx_selObj[0] + "." + $lx_attr) ($lx_selObj[$i] + "." + $lx_attr);
+	}
+}

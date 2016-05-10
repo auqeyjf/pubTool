@@ -1,0 +1,64 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: j_parameterProc
+//
+// CREATE DATE : 2014.10.30 PM 4:30
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION:
+//            选择一批毛囊，点next，会自动选择到对应的毛囊，拉动两个滑块即可调整UV值了。再也不用担心一下拖远了又或者手抖了
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+global proc j_parameterProc()
+{
+    if(`window -ex j_Follic_win`)
+    {
+        deleteUI j_Follic_win;
+    }
+    global string $j_selObj[];
+    global int $i;
+    global string $j_currentShape[];
+    $i = 0;
+    $j_selObj = `ls -sl`;
+    $j_currentShape = `listRelatives -shapes $j_selObj`;
+    window -mxb 0 -mnb 0 -t "Follicle ParameterUV Modifer" -wh 800 60 -sizeable 0 j_Follic_win;
+        columnLayout;
+            text -en 0 -l "只需选择需要调整的毛囊，点next,拉动滑块就行了\n\r                                   \"Reset\"的功能就是在你重新选择一批毛囊后，重新加载进来，供调位置" -h 24;
+            attrFieldSliderGrp -en 0 -label ( "P_U:  ")  -min 0 -max 1  -cw3 120 80 800 j_grp1;
+            attrFieldSliderGrp -en 0 -label ( "P_V:  ")  -min 0 -max 1  -cw3 120 80 800 j_grp2;
+
+            button -en 0 -l "Next-->" -c "j_parameter" -w 1000 j_Button01;
+            button -l "Reset" -c "j_parameterProc" -w 1000;
+            text -l "                                                                                                                                                           Author : Jiangjishi " -h 12 -en 0;
+            text -l "                                                                                                                                                          Q    Q : 287226623" -h 12 -en 0;
+
+    if(`size $j_selObj`>=1)
+       {
+           button -e -en 1 j_Button01;
+       }
+    showWindow j_Follic_win;
+}
+
+
+global proc j_parameter()
+{
+   global string  $j_selObj[];
+   string $j_shape;
+   global int $i;
+   global string $j_currentShape[];
+   print "\r\t";
+   print $j_currentShape[$i];
+   $j_shape = $j_currentShape[$i];
+   select -r $j_selObj[$i];
+   attrFieldSliderGrp -e -en 1 -label ($j_shape + "P_U:  ") -attribute ($j_shape + ".parameterU") j_grp1;
+   attrFieldSliderGrp -e -en 1 -label ($j_shape + "P_V:  ") -attribute ($j_shape + ".parameterV") j_grp2;
+   int $j_num = `size $j_currentShape`;
+   $i++;
+   if($i==$j_num)
+    {
+        button -e -en 0 j_Button01;
+    }
+
+}

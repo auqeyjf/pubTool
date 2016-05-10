@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// SCRIPT NAME: lx_snapPointPosition
+//
+// CREATE DATE : 2014.09.11
+// AUTHON: JiangJiShi
+// LAST UPDATE:
+// DISCRIPTION:  吸附点工具，用来匹配具有两个相同点数的模型的形状。
+//
+// 	This script is working for snap the point to other object point position
+// 	when its point number is same.
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+global proc int lx_snapPointPosition()
+{
+	string $lx_select[], $lx_refobj[], $lx_shapename[];
+	$lx_select = `ls -sl`;
+	int $i;
+
+	if (size($lx_select) < 2)
+	{
+		confirmDialog -message "Select the vertices then select the target object to snap at last!\r\r #注解：可以选择多个点,然后选择另一个物体，两个物体的\r               点数要一样" -button "Ok!" -defaultButton "Yes";
+		return 0;
+	}
+
+	$lx_refobj = `ls -selection -tail 1`;
+	string $lx_shape[] = `listRelatives -s $lx_refobj[0]` ;
+
+
+	for ($i = 0; $i < (size($lx_select) - 1); $i++)
+	{
+  	string $lx_selinfo[];
+  	tokenize ($lx_select[$i]) "[" $lx_selinfo;
+  	string $lx_selname = $lx_selinfo[0];
+  	int $lx_size = `size($lx_selinfo[1])`;
+  	string $lx_range = `substring $lx_selinfo[1] 1 ($lx_size-1)`;
+  	int $lx_to = `gmatch $lx_range "*:*"`;
+  	int $lx_start, $lx_end;
+  	string $lx_num[];
+  	if ($lx_to)
+  	{
+    	tokenize $lx_range ":" $lx_num;
+      $lx_start = $lx_num[0];
+      $lx_end = $lx_num[1];
+  	}
+  	else
+  	{
+      $lx_start = $lx_range;
+      $lx_end = $lx_range;
+  	}
+  	for ($j = $lx_start; $j <= $lx_end; $j++)
+  	{
+    	 float $lx_pos[];
+     	$lx_pos = `pointPosition -l ($lx_refobj[0] + ".vtx[" + $j + "]")`;
+     	move -a -os $lx_pos[0] $lx_pos[1] $lx_pos[2] ($lx_selname + "[" + $j + "]");
+  	}
+	}
+	print "Snap to corresponed point is complete!\n";
+	return 0;
+}
+lx_snapPointPosition();
+

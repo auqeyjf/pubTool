@@ -1,0 +1,58 @@
+// create PointOnCurveInfo
+pointOnCurve -ch -1 FK_TongKongA0Shape1;
+
+// create joint and connect the translate attribute
+string $abc[]=`ls -sl`;
+string $jointName = "Jnt_";
+for($i=0;$i<(`size $abc`);$i++)
+{
+    joint -p 0 0 0 -n ($jointName + $i);
+    connectAttr -f ($abc[$i]+".position") ($jointName + $i + ".translate");
+    select -cl;
+}
+
+string $abc[]=`ls -sl`;
+float $acc = 0.3333333333333333;
+for ($i=1;$i<24;$i++)
+{
+    setAttr ($abc[$i-1]+".parameter") $acc;
+    $acc=0.3333333333333333*$i;
+    print $acc;
+    print "\r";
+}
+
+print (1*0.75)
+
+//setAttr "pointOnCurveInfo2.parameter" 2.05;
+
+
+// create Expression
+
+string $abc[]=`ls -sl`;
+string $Exp_text="";
+float $biLu =1.0;
+for ($i=1;$i<(`size $abc`);$i++)
+{
+    //   Loc_EyeBall_207.tx = Loc_EyeBall_208.tx * 0.95;
+    $biLu = $biLu *0.95;
+    $Exp_text = $Exp_text + $abc[$i]+ ".tx = " + $abc[$i-1] + ".tx *" +  $biLu + ";\n"+ $abc[$i]+ ".ty = " + $abc[$i-1] + ".ty *" +  $biLu + ";\n"+ $abc[$i]+ ".tz = " + $abc[$i-1] + ".tz *" +  $biLu + ";\n";
+}
+print $Exp_text;
+expression -s $Exp_text ; 
+
+
+string $abc[]=`ls -sl`;
+string $LocName ="Loc_EyeBall_";
+string $newName;
+float $pos[];
+for($i=0;$i<(`size $abc`);$i++)
+{
+    $newName =$LocName + $i;
+    $pos = `xform -q -ws -t $abc[$i]`;
+    group -em -w -n ("grp_" + $newName);
+    spaceLocator -p 0 0 0 -n  $newName;
+    parent $newName  ("grp_" + $newName);
+    xform -ws -t $pos[0] $pos[1] $pos[2] ("grp_" + $newName);
+    pointConstraint -mo  $newName  $abc[$i];
+    clear  $pos;
+}

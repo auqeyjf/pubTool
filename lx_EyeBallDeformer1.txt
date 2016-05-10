@@ -1,0 +1,33 @@
+global proc lx_EyeBallDefromer1(string $j_obj)
+ {
+    //create joints on per vertix
+	string $j_converted[],$j_vtxes[],$j_temp , $j_joints[] , $j_endIKjnt[],$j_ikGrp[];
+	float $j_centerPivot[],$j_vtxPos[];
+	$j_centerPivot = `xform -q -ws -rp $j_obj`;
+    $j_converted = `polyListComponentConversion -ff -fe -fuv -fvf -tv`;
+    
+    select -r $j_converted;
+	$j_vtxes = `filterExpand -sm 31`;
+	group -em -name ("Grp_" + $j_obj + "_jnt");
+	group -em  -w -n ("Grp_" + $j_obj + "_iks");
+	select -cl;
+	for($j_i=0; $j_i<(`size $j_vtxes`);$j_i++)
+	{
+		$j_vtxPos = `xform -q -ws -t $j_vtxes[$j_i]`;
+		$j_temp =`joint -p $j_centerPivot[0] $j_centerPivot[1] $j_centerPivot[2]`;
+		joint -p $j_vtxPos[0] $j_vtxPos[1] $j_vtxPos[2];
+		parent $j_temp ("Grp_" + $j_obj + "_jnt");
+	}
+	select -r ("Grp_" + $j_obj + "_jnt");
+	$j_joints =`listRelatives -c`;
+	select -cl;
+	
+	for ($j_a=0;$j_a<(`size $j_joints`);$j_a++)
+	{
+	   $j_endIKjnt = `listRelatives -c $j_joints[$j_a]`;
+	   $j_ikGrp =`ikHandle -sj $j_joints[$j_a] -ee $j_endIKjnt`;
+	   parent $j_ikGrp[0] ("Grp_" + $j_obj + "_iks");
+	   clear $j_endIKjnt;
+	   
+	}		
+ }
