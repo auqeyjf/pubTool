@@ -196,3 +196,22 @@ def j_doFreezeVtx(): #10
         mc.delete( obj , ch =1 )
         mc.select(obj , r =1)
     print "Complete !!"     
+    
+def j_MakeContrlsOnJntPos():
+    u'make a new contrl on position of specify joint'
+    jnt,ctrl = mc.ls(sl=True)
+    ctrl_n = mc.duplicate(ctrl)
+    mc.select(cl =1 )
+    ctrl_grp = mc.group(em = 1,n = ("grp_"+ctrl_n[0]))
+    temp = mc.parentConstraint(jnt , ctrl_n, maintainOffset = False)
+    mc.delete(temp)
+    temp = mc.parentConstraint(ctrl_n, ctrl_grp, maintainOffset = False )
+    mc.delete(temp)
+    mc.parent(ctrl_n,ctrl_grp)
+    temp = mc.parentConstraint(jnt, ctrl_grp)
+    mc.delete(temp)
+    mc.parent(jnt, ctrl_n)
+    mc.select(ctrl, r = True)
+    shape = mc.listRelatives(ctrl_n[0], children = 1)[0]
+    mc.setAttr((shape + ".overrideEnabled"), 1 )
+    mc.setAttr((shape + ".overrideColor"), 4 )        
