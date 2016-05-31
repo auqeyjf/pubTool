@@ -215,3 +215,16 @@ def j_MakeContrlsOnJntPos():
     shape = mc.listRelatives(ctrl_n[0], children = 1)[0]
     mc.setAttr((shape + ".overrideEnabled"), 1 )
     mc.setAttr((shape + ".overrideColor"), 4 )        
+    
+    
+    
+def j_fixAdv3_99_forMaya2016():
+    j_drivenKey = {"antiPop":4.990848, "normal":4.878867}
+    
+    for drv in j_drivenKey: #数值 
+        for pat in ("Arm","Leg"):  #arm or leg
+            for side in ("_R","_L"):
+                for i in ("antiPop","normal"):
+                    mc.selectKey(("IKdistance" + pat + side +"Shape_"+ i), ot =True, f = (j_drivenKey[drv],))
+                    mc.keyTangent(("IKdistance" + pat + side +"Shape_"+ i), lock = False,)
+                    mc.keyTangent( itt = "clamped",ott = "clamped",)       
