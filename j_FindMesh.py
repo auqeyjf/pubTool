@@ -5,7 +5,7 @@ u'''
   E-mail:  Jiangjishi@foxmail.com
   Created: 2016/1/14 16:36:50
   Description:
-  "找出场景中低于指定数量的模型"
+  "工具集 ToolSet"
   Instruction:
   j_findMesh()
 """'''
