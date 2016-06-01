@@ -219,6 +219,7 @@ def j_MakeContrlsOnJntPos():
     
     
 def j_fixAdv3_99_forMaya2016():
+    'fix advanceSkeleton v3.99 stretch not work in maya2016'
     j_drivenKey = {"antiPop":4.990848, "normal":4.878867}
     
     for drv in j_drivenKey: #数值 
@@ -228,3 +229,14 @@ def j_fixAdv3_99_forMaya2016():
                     mc.selectKey(("IKdistance" + pat + side +"Shape_"+ i), ot =True, f = (j_drivenKey[drv],))
                     mc.keyTangent(("IKdistance" + pat + side +"Shape_"+ i), lock = False,)
                     mc.keyTangent( itt = "clamped",ott = "clamped",)       
+                    
+def j_createRigHead():
+    u'create some groups'
+    mc.select(cl =True)
+    filename_type = mc.file(q = 1,sn = 1,shn = 1)
+    filename = filename_type[:-3]
+    g1 = mc.group(em =1,n = (filename + "_Rig"))
+    g2 = mc.group(em =1,n = "Geometry")
+    g3 = mc.group(em =1,n = "GlobalSetting")   
+    g4 = mc.group(em =1,n = "grp_Master")
+    mc.parent(g2,g3,g4,g1)
