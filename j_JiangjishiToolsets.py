@@ -238,5 +238,15 @@ def j_createRigHead():
     g1 = mc.group(em =1,n = (filename + "_Rig"))
     g2 = mc.group(em =1,n = "Geometry")
     g3 = mc.group(em =1,n = "GlobalSetting")   
-    g4 = mc.group(em =1,n = "grp_Master")
+    g4 = mc.group(em =1,n = "Grp_Master")
     mc.parent(g2,g3,g4,g1)
+    
+    
+def j_changeOverrideColor(colorNum = 4):
+    u'set the overrideColor [4 暗红] [15 浅蓝] [22 淡黄] 6 亮蓝  13 亮红 14 亮绿  17黄色  23 淡绿 28 淡蓝 18 adv'
+    contrls = mc.ls(sl =1)
+    for item in contrls:
+        shape = mc.listRelatives(item,children =1)[0]
+        mc.setAttr((shape + ".overrideEnabled"),1)
+        mc.setAttr((shape + ".overrideColor"),colorNum)
+        
