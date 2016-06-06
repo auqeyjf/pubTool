@@ -12,6 +12,7 @@ u'''
 
 import maya.cmds as mc
 import pymel.core as pm
+import math
 
 def j_findMesh(faceNum=5):#1
     u'''找出少于指定数量的物体'''
@@ -249,4 +250,43 @@ def j_changeOverrideColor(colorNum = 4):
         shape = mc.listRelatives(item,children =1)[0]
         mc.setAttr((shape + ".overrideEnabled"),1)
         mc.setAttr((shape + ".overrideColor"),colorNum)
-        
+
+
+def j_MakeStretchy(mainContrl="Main"):
+    u'做拉伸,主控制器，先选骨骼链，最后选ik曲线'
+    #ready
+    jnt = mc.ls(sl =True)[:-1]
+    cuv = mc.ls(sl =True)[-1]
+    arcNode = mc.arclen(cuv,ch =True,)  
+    num = len(jnt)
+    #operater
+    length = mc.getAttr((arcNode + ".arcLength"))
+    # mainScale = mc.getAttr((mainContrl+".scaleX"))
+    md1 = mc.createNode('multiplyDivide')
+    md2 = mc.createNode('multiplyDivide')
+    #md3 = mc.createNode('multiplyDivide')
+    mc.connectAttr((mainContrl+".scaleX"),(md1 +".input1X"))
+    mc.setAttr((md1 +".input2X"),length)
+    
+    mc.connectAttr((arcNode+".arcLength"),(md2+".input1X"))
+    mc.connectAttr((md1+".outputX"),(md2 +".input2X"))    
+    mc.setAttr((md2+".operation"),2)
+    axiss = ("X","Y","Z")
+    nodeNumA = (num*1.0)/3 # num%3 #
+    #nodeNumB = math.ceil(nodeNumB)
+    nodeCount = int(math.ceil(nodeNumA))
+    attr = 0
+    for n in range(nodeCount):
+        mdnode = mc.createNode('multiplyDivide')        
+        for i in axiss:
+            print attr
+            if attr>=(num):
+                break
+            tranX = mc.getAttr(jnt[attr] + ".tx")
+            mc.setAttr((mdnode + ".input2" + i),tranX) #设置为骨骼的初始位移值
+            mc.connectAttr((md2+".outputX"),(mdnode + ".input1"+i))
+            mc.connectAttr((mdnode+".output"+i),(jnt[attr]+'.tx'))
+            attr +=1                  
+    
+    #compelte
+            
